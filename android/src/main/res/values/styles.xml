@@ -1,8 +1,8 @@
 <resources>
 
-    <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
-        <!-- Customize your theme here. -->
+    <style name="PlayerTheme" parent="android:Theme.Holo">
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowBackground">@android:color/black</item>
     </style>
 
 </resources>

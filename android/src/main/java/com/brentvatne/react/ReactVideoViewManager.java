@@ -1,14 +1,10 @@
 package com.brentvatne.react;
 
-import com.brentvatne.react.ReactVideoView.Events;
-import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.SimpleViewManager;
 import com.facebook.react.uimanager.ThemedReactContext;
-import com.facebook.react.uimanager.events.RCTEventEmitter;
 import com.yqritc.scalablevideoview.ScalableType;
 
 import javax.annotation.Nullable;
@@ -55,7 +51,7 @@ public class ReactVideoViewManager extends SimpleViewManager<ReactVideoView> {
     @Nullable
     public Map getExportedCustomDirectEventTypeConstants() {
         MapBuilder.Builder builder = MapBuilder.builder();
-        for (Events event : Events.values()) {
+        for (VideoViewEvents event : VideoViewEvents.values()) {
             builder.put(event.toString(), MapBuilder.of("registrationName", event.toString()));
         }
         return builder.build();
