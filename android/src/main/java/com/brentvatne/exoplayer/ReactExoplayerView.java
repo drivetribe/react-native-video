@@ -93,7 +93,7 @@ class ReactExoplayerView extends FrameLayout implements
 
     private Handler mainHandler;
     private EventLogger eventLogger;
-    private ExoPlayerView simpleExoPlayerView;
+    private ExoPlayerView exoPlayerView;
 
     private DataSource.Factory mediaDataSourceFactory;
     private SimpleExoPlayer player;
@@ -152,10 +152,10 @@ class ReactExoplayerView extends FrameLayout implements
             CookieHandler.setDefault(DEFAULT_COOKIE_MANAGER);
         }
 
-        simpleExoPlayerView = new ExoPlayerView(getContext());
-        simpleExoPlayerView.setLayoutParams(layoutParams);
+        exoPlayerView = new ExoPlayerView(getContext());
+        exoPlayerView.setLayoutParams(layoutParams);
 
-        addView(simpleExoPlayerView, 0);
+        addView(exoPlayerView, 0);
     }
 
     @Override
@@ -238,7 +238,7 @@ class ReactExoplayerView extends FrameLayout implements
             player.setAudioDebugListener(eventLogger);
             player.setVideoDebugListener(eventLogger);
             player.setId3Output(eventLogger);
-            simpleExoPlayerView.setPlayer(player);
+            exoPlayerView.setPlayer(player);
             if (shouldRestorePosition) {
                 if (playerPosition == C.TIME_UNSET) {
                     player.seekToDefaultPosition(playerWindow);
@@ -449,7 +449,7 @@ class ReactExoplayerView extends FrameLayout implements
     }
 
     public void setResizeModeModifier(@ResizeMode int resizeMode) {
-        simpleExoPlayerView.setResizeMode(resizeMode);
+        exoPlayerView.setResizeMode(resizeMode);
     }
 
     public void setRepeatModifier(boolean repeat) {
