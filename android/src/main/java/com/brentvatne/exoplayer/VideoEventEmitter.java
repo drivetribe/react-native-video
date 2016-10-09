@@ -5,27 +5,28 @@ import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
 
-public class VideoEventEmitter {
+class VideoEventEmitter {
 
-    private int viewId;
-    private ReactContext reactContext;
+    private final int viewId;
+    private final ReactContext reactContext;
 
-    public VideoEventEmitter(int viewId, ReactContext reactContext) {
+    VideoEventEmitter(int viewId, ReactContext reactContext) {
         this.viewId = viewId;
         this.reactContext = reactContext;
     }
 
-    public enum Events {
-        EVENT_PREPARE("onVideoPrepare"),
+    private enum Events {
+        EVENT_LOAD_START("onVideoLoadStart"),
+        EVENT_LOAD("onVideoLoad"),
         EVENT_ERROR("onVideoError"),
         EVENT_PROGRESS("onVideoProgress"),
         EVENT_SEEK("onVideoSeek"),
         EVENT_END("onVideoEnd"),
-        EVENT_BUFFERING("onBuffering"),
-        EVENT_PREPARING("onPreparing"),
-        EVENT_IDLE("onIdle"),
-        EVENT_VIDEO_SIZE_CHANGED("onVideoSizeChanged"),
-        EVENT_READY("onVideoReady");
+        EVENT_STALLED("onPlaybackStalled"),
+        EVENT_RESUME("onPlaybackResume"),
+        EVENT_READY_FOR_DISPLAY("onReadyForDisplay"),
+        EVENT_BUFFER("onBuffer"),
+        EVENT_IDLE("onIdle");
 
         private final String mName;
 
@@ -37,80 +38,91 @@ public class VideoEventEmitter {
         public String toString() {
             return mName;
         }
-
     }
 
-    public static final String EVENT_PROP_DURATION = "duration";
-    public static final String EVENT_PROP_PLAYABLE_DURATION = "playableDuration";
-    public static final String EVENT_PROP_CURRENT_TIME = "currentTime";
-    public static final String EVENT_PROP_SEEK_TIME = "seekTime";
-    public static final String EVENT_PROP_NATURALSIZE = "naturalSize";
-    public static final String EVENT_PROP_WIDTH = "width";
-    public static final String EVENT_PROP_HEIGHT = "height";
-    public static final String EVENT_PROP_ORIENTATION = "orientation";
+    private static final String EVENT_PROP_FAST_FORWARD = "canPlayFastForward";
+    private static final String EVENT_PROP_SLOW_FORWARD = "canPlaySlowForward";
+    private static final String EVENT_PROP_SLOW_REVERSE = "canPlaySlowReverse";
+    private static final String EVENT_PROP_REVERSE = "canPlayReverse";
+    private static final String EVENT_PROP_STEP_FORWARD = "canStepForward";
+    private static final String EVENT_PROP_STEP_BACKWARD = "canStepBackward";
 
-    public static final String EVENT_PROP_ERROR = "error";
-    public static final String EVENT_PROP_ERROR_STRING = "errorString";
+    private static final String EVENT_PROP_DURATION = "duration";
+    private static final String EVENT_PROP_PLAYABLE_DURATION = "playableDuration";
+    private static final String EVENT_PROP_CURRENT_TIME = "currentTime";
+    private static final String EVENT_PROP_SEEK_TIME = "seekTime";
+    private static final String EVENT_PROP_NATURAL_SIZE = "naturalSize";
+    private static final String EVENT_PROP_WIDTH = "width";
+    private static final String EVENT_PROP_HEIGHT = "height";
+    private static final String EVENT_PROP_ORIENTATION = "orientation";
 
-    public void loadStart() {
-        receiveEvent(Events.EVENT_PREPARE, null);
+    private static final String EVENT_PROP_ERROR = "error";
+    private static final String EVENT_PROP_ERROR_STRING = "errorString";
+    private static final String EVENT_PROP_ERROR_EXCEPTION = "";
+    private static final String EVENT_PROP_WHAT = "what";
+    private static final String EVENT_PROP_EXTRA = "extra";
+
+    void loadStart() {
+        receiveEvent(Events.EVENT_LOAD_START, null); // TODO: do we need the src?
     }
 
-    public void ready(double duration, double currentPosition) {
+    void ready(double duration, double currentPosition) {
         WritableMap event = Arguments.createMap();
-        event.putDouble(EVENT_PROP_DURATION, duration / 1000.0);
+        event.putDouble(EVENT_PROP_DURATION, duration / 1000D);
+        event.putDouble(EVENT_PROP_CURRENT_TIME, currentPosition / 1000D);
+//        event.putMap(EVENT_PROP_NATURAL_SIZE, naturalSize);
+
+//        WritableMap naturalSize = Arguments.createMap();
+//        naturalSize.putInt(EVENT_PROP_WIDTH, mp.getVideoWidth());
+//        naturalSize.putInt(EVENT_PROP_HEIGHT, mp.getVideoHeight());
+//        if (mp.getVideoWidth() > mp.getVideoHeight()) {
+//            naturalSize.putString(EVENT_PROP_ORIENTATION, "landscape");
+//        } else {
+//            naturalSize.putString(EVENT_PROP_ORIENTATION, "portrait");
+//        }
+
+        // TODO: Actually check if you can.
+        event.putBoolean(EVENT_PROP_FAST_FORWARD, true);
+        event.putBoolean(EVENT_PROP_SLOW_FORWARD, true);
+        event.putBoolean(EVENT_PROP_SLOW_REVERSE, true);
+        event.putBoolean(EVENT_PROP_REVERSE, true);
+        event.putBoolean(EVENT_PROP_FAST_FORWARD, true);
+        event.putBoolean(EVENT_PROP_STEP_BACKWARD, true);
+        event.putBoolean(EVENT_PROP_STEP_FORWARD, true);
+
+        receiveEvent(Events.EVENT_LOAD, event);
+    }
+
+    void onProgressChanged(double currentPosition, double bufferedDuration) {
+        WritableMap event = Arguments.createMap();
         event.putDouble(EVENT_PROP_CURRENT_TIME, currentPosition / 1000.0);
-
-        receiveEvent(Events.EVENT_READY, event);
-    }
-
-    public void onVideoSizeChanged(int width, int height) {
-        WritableMap naturalSize = Arguments.createMap();
-        naturalSize.putInt(EVENT_PROP_WIDTH, width);
-        naturalSize.putInt(EVENT_PROP_HEIGHT, height);
-        if (width > height) {
-            naturalSize.putString(EVENT_PROP_ORIENTATION, "landscape");
-        } else {
-            naturalSize.putString(EVENT_PROP_ORIENTATION, "portrait");
-        }
-        WritableMap event = Arguments.createMap();
-        event.putMap(EVENT_PROP_NATURALSIZE, naturalSize);
-        receiveEvent(Events.EVENT_VIDEO_SIZE_CHANGED, event);
-    }
-
-    public void onProgressChanged(double currentPostition, double bufferedDuration) {
-        WritableMap event = Arguments.createMap();
-        event.putDouble(EVENT_PROP_CURRENT_TIME, currentPostition / 1000.0);
         event.putDouble(EVENT_PROP_PLAYABLE_DURATION, bufferedDuration / 1000.0); //TODO:mBufferUpdateRunnable
         receiveEvent(Events.EVENT_PROGRESS, event);
     }
 
-    public void seek(double currentPostition, double seekTime) {
+    void seek(long currentPosition, long seekTime) {
         WritableMap event = Arguments.createMap();
-        event.putDouble(EVENT_PROP_CURRENT_TIME, currentPostition / 1000.0);
+        event.putDouble(EVENT_PROP_CURRENT_TIME, currentPosition / 1000.0);
         event.putDouble(EVENT_PROP_SEEK_TIME, seekTime / 1000.0);
         receiveEvent(Events.EVENT_SEEK, event);
     }
 
-    public void buffering() {
-        receiveEvent(Events.EVENT_BUFFERING, null);
+    void buffering() {
+        receiveEvent(Events.EVENT_BUFFER, null);
     }
 
-    public void preparing() {
-        receiveEvent(Events.EVENT_PREPARING, null);
-    }
-
-    public void idle() {
+    void idle() {
         receiveEvent(Events.EVENT_IDLE, null);
     }
 
-    public void end() {
+    void end() {
         receiveEvent(Events.EVENT_END, null);
     }
 
-    public void error(String errorString, Exception extra) {
+    void error(String errorString, Exception exception) {
         WritableMap error = Arguments.createMap();
         error.putString(EVENT_PROP_ERROR_STRING, errorString);
+        error.putString(EVENT_PROP_ERROR_EXCEPTION, exception.getMessage());
         WritableMap event = Arguments.createMap();
         event.putMap(EVENT_PROP_ERROR, error);
         receiveEvent(Events.EVENT_ERROR, event);

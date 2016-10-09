@@ -45,7 +45,6 @@ public class ReactExoplayerViewManager extends SimpleViewManager<ReactExoplayerV
 
     @Override
     public void onDropViewInstance(ReactExoplayerView view) {
-        super.onDropViewInstance(view);
         view.cleanupMediaPlayerResources();
     }
 
@@ -70,36 +69,18 @@ public class ReactExoplayerViewManager extends SimpleViewManager<ReactExoplayerV
 
     @ReactProp(name = PROP_SRC)
     public void setSrc(final ReactExoplayerView videoView, @Nullable ReadableMap src) {
-        int mainVer = src.getInt(PROP_SRC_MAINVER);
-        int patchVer = src.getInt(PROP_SRC_PATCHVER);
-        if (mainVer < 0) {
-            mainVer = 0;
-        }
-        if (patchVer < 0) {
-            patchVer = 0;
-        }
-        if (mainVer > 0) {
-            videoView.setSrc(
-                    src.getString(PROP_SRC_URI),
-                    src.getString(PROP_SRC_TYPE),
-                    src.getBoolean(PROP_SRC_IS_NETWORK),
-                    src.getBoolean(PROP_SRC_IS_ASSET),
-                    mainVer,
-                    patchVer
-            );
-        } else {
-            videoView.setSrc(
-                    src.getString(PROP_SRC_URI),
-                    src.getString(PROP_SRC_TYPE),
-                    src.getBoolean(PROP_SRC_IS_NETWORK),
-                    src.getBoolean(PROP_SRC_IS_ASSET)
-            );
-        }
+        videoView.setSrc(
+                src.getString(PROP_SRC_URI),
+                src.getString(PROP_SRC_TYPE),
+                src.getBoolean(PROP_SRC_IS_NETWORK),
+                src.getBoolean(PROP_SRC_IS_ASSET)
+        );
     }
 
     @ReactProp(name = PROP_RESIZE_MODE)
     public void setResizeMode(final ReactExoplayerView videoView, final String resizeModeOrdinalString) {
-        videoView.setResizeModeModifier(ScalableType.values()[Integer.parseInt(resizeModeOrdinalString)]);
+        // TODO:
+//        videoView.setResizeModeModifier();
     }
 
     @ReactProp(name = PROP_REPEAT, defaultBoolean = false)
@@ -137,8 +118,4 @@ public class ReactExoplayerViewManager extends SimpleViewManager<ReactExoplayerV
         videoView.setPlayInBackground(playInBackground);
     }
 
-    @ReactProp(name = PROP_CONTROLS, defaultBoolean = false)
-    public void setControls(final ReactExoplayerView videoView, final boolean controls) {
-        videoView.setControls(controls);
-    }
 }
