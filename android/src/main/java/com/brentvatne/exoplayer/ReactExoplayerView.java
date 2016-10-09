@@ -44,8 +44,6 @@ import com.google.android.exoplayer2.trackselection.TrackSelection;
 import com.google.android.exoplayer2.trackselection.TrackSelections;
 import com.google.android.exoplayer2.trackselection.TrackSelector;
 import com.google.android.exoplayer2.ui.AspectRatioFrameLayout;
-import com.google.android.exoplayer2.ui.PlaybackControlView;
-import com.google.android.exoplayer2.ui.SimpleExoPlayerView;
 import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
 import com.google.android.exoplayer2.upstream.HttpDataSource;
@@ -64,8 +62,7 @@ import static java.lang.annotation.RetentionPolicy.SOURCE;
 class ReactExoplayerView extends FrameLayout implements
         LifecycleEventListener,
         ExoPlayer.EventListener,
-        TrackSelector.EventListener<MappingTrackSelector.MappedTrackInfo>,
-        PlaybackControlView.VisibilityListener {
+        TrackSelector.EventListener<MappingTrackSelector.MappedTrackInfo> {
 
     private static final String TAG = "ReactExoplayerView";
 
@@ -96,7 +93,7 @@ class ReactExoplayerView extends FrameLayout implements
 
     private Handler mainHandler;
     private EventLogger eventLogger;
-    private SimpleExoPlayerView simpleExoPlayerView;
+    private ExoPlayerView simpleExoPlayerView;
 
     private DataSource.Factory mediaDataSourceFactory;
     private SimpleExoPlayer player;
@@ -109,7 +106,7 @@ class ReactExoplayerView extends FrameLayout implements
 
     // Props from React
     private Uri srcUri;
-    private String extenstion;
+    private String extension;
     private boolean shouldAutoPlay;
     private boolean repeat;
     // \ End props
@@ -145,27 +142,20 @@ class ReactExoplayerView extends FrameLayout implements
     }
 
     private void createViews() {
-        setFocusable(false);
-        setClickable(false);
-
         LayoutParams layoutParams = new LayoutParams(
                 LayoutParams.MATCH_PARENT,
                 LayoutParams.MATCH_PARENT);
 
-        shouldAutoPlay = true;
         mediaDataSourceFactory = buildDataSourceFactory(true);
         mainHandler = new Handler();
         if (CookieHandler.getDefault() != DEFAULT_COOKIE_MANAGER) {
             CookieHandler.setDefault(DEFAULT_COOKIE_MANAGER);
         }
 
-        simpleExoPlayerView = new SimpleExoPlayerView(getContext());
+        simpleExoPlayerView = new ExoPlayerView(getContext());
         simpleExoPlayerView.setLayoutParams(layoutParams);
-        simpleExoPlayerView.setUseController(false);
-        simpleExoPlayerView.setControllerVisibilityListener(this);
-        simpleExoPlayerView.setClickable(false);
-        simpleExoPlayerView.setFocusable(false);
-        addView(simpleExoPlayerView);
+
+        addView(simpleExoPlayerView, 0);
     }
 
     @Override
@@ -201,13 +191,6 @@ class ReactExoplayerView extends FrameLayout implements
         releasePlayer();
     }
 
-
-    // PlaybackControlView.VisibilityListener implementation
-
-    @Override
-    public void onVisibilityChange(int visibility) {
-        // TODO: should we use this?
-    }
 
     // Internal methods
 
@@ -267,7 +250,7 @@ class ReactExoplayerView extends FrameLayout implements
             playerNeedsSource = true;
         }
         if (playerNeedsSource) {
-            MediaSource mediaSource = buildMediaSource(srcUri, extenstion);
+            MediaSource mediaSource = buildMediaSource(srcUri, extension);
             mediaSource = repeat ? new LoopingMediaSource(mediaSource) : mediaSource;
             player.prepare(mediaSource, !shouldRestorePosition);
             playerNeedsSource = false;
@@ -460,13 +443,9 @@ class ReactExoplayerView extends FrameLayout implements
         if (uri != null) {
             eventEmmiter.loadStart();
             this.srcUri = Uri.parse(uri);
-            this.extenstion = type;
+            this.extension = type;
             initializePlayer();
         }
-    }
-
-    public void setShouldAutoPlayModifier(boolean shouldAutoPlay) {
-        this.shouldAutoPlay = shouldAutoPlay;
     }
 
     public void setResizeModeModifier(@ResizeMode int resizeMode) {
@@ -512,7 +491,4 @@ class ReactExoplayerView extends FrameLayout implements
     public void setPlayInBackground(boolean playInBackground) {
     }
 
-    public void setControls(boolean controls) {
-        simpleExoPlayerView.setUseController(controls);
-    }
 }

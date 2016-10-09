@@ -18,6 +18,7 @@ class VideoPlayer extends Component {
     resizeMode: 'contain',
     duration: 0.0,
     currentTime: 0.0,
+    paused: false,
   };
 
   onLoad = (data) => {
@@ -91,7 +92,7 @@ class VideoPlayer extends Component {
             onLoad={this.onLoad}
             onProgress={this.onProgress}
             onEnd={() => { console.log('Done!') }}
-            repeat
+            repeat={false}
           />
         </TouchableOpacity>
 

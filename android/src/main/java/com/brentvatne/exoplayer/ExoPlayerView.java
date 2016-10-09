@@ -1,0 +1,197 @@
+package com.brentvatne.exoplayer;
+
+import android.annotation.TargetApi;
+import android.content.Context;
+import android.support.v4.content.ContextCompat;
+import android.util.AttributeSet;
+import android.view.Gravity;
+import android.view.SurfaceView;
+import android.view.TextureView;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.FrameLayout;
+
+import com.google.android.exoplayer2.ExoPlaybackException;
+import com.google.android.exoplayer2.ExoPlayer;
+import com.google.android.exoplayer2.SimpleExoPlayer;
+import com.google.android.exoplayer2.Timeline;
+import com.google.android.exoplayer2.text.Cue;
+import com.google.android.exoplayer2.text.TextRenderer;
+import com.google.android.exoplayer2.ui.AspectRatioFrameLayout;
+import com.google.android.exoplayer2.ui.SubtitleView;
+
+import java.util.List;
+
+@TargetApi(16)
+public final class ExoPlayerView extends FrameLayout {
+
+    private final View surfaceView;
+    private final View shutterView;
+    private final SubtitleView subtitleLayout;
+    private final AspectRatioFrameLayout layout;
+    private final ComponentListener componentListener;
+    private SimpleExoPlayer player;
+
+    public ExoPlayerView(Context context) {
+        this(context, null);
+    }
+
+    public ExoPlayerView(Context context, AttributeSet attrs) {
+        this(context, attrs, 0);
+    }
+
+    public ExoPlayerView(Context context, AttributeSet attrs, int defStyleAttr) {
+        super(context, attrs, defStyleAttr);
+
+        ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT);
+
+        componentListener = new ComponentListener();
+
+        FrameLayout.LayoutParams aspectRatioParams = new FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.MATCH_PARENT,
+                FrameLayout.LayoutParams.MATCH_PARENT);
+        aspectRatioParams.gravity = Gravity.CENTER;
+        layout = new AspectRatioFrameLayout(context);
+        layout.setLayoutParams(aspectRatioParams);
+        layout.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_FIT);
+
+        shutterView = new View(getContext());
+        shutterView.setLayoutParams(params);
+        shutterView.setBackgroundColor(ContextCompat.getColor(context, android.R.color.black));
+
+        subtitleLayout = new SubtitleView(context);
+        subtitleLayout.setLayoutParams(params);
+        subtitleLayout.setUserDefaultStyle();
+        subtitleLayout.setUserDefaultTextSize();
+
+        surfaceView = new SurfaceView(context);
+        surfaceView.setLayoutParams(params);
+
+        layout.addView(surfaceView);
+        layout.addView(shutterView);
+        layout.addView(subtitleLayout);
+
+        addView(layout);
+    }
+
+    /**
+     * Returns the player currently set on this view, or null if no player is set.
+     */
+    public SimpleExoPlayer getPlayer() {
+        return player;
+    }
+
+    /**
+     * Set the {@link SimpleExoPlayer} to use. The {@link SimpleExoPlayer#setTextOutput} and
+     * {@link SimpleExoPlayer#setVideoListener} method of the player will be called and previous
+     * assignments are overridden.
+     *
+     * @param player The {@link SimpleExoPlayer} to use.
+     */
+    public void setPlayer(SimpleExoPlayer player) {
+        if (this.player == player) {
+            return;
+        }
+        if (this.player != null) {
+            this.player.setTextOutput(null);
+            this.player.setVideoListener(null);
+            this.player.removeListener(componentListener);
+            this.player.setVideoSurface(null);
+        }
+        this.player = player;
+        if (player != null) {
+            if (surfaceView instanceof TextureView) {
+                player.setVideoTextureView((TextureView) surfaceView);
+            } else if (surfaceView instanceof SurfaceView) {
+                player.setVideoSurfaceView((SurfaceView) surfaceView);
+            }
+            player.setVideoListener(componentListener);
+            player.addListener(componentListener);
+            player.setTextOutput(componentListener);
+        } else {
+            shutterView.setVisibility(VISIBLE);
+        }
+    }
+
+    /**
+     * Sets the resize mode which can be of value {@link AspectRatioFrameLayout#RESIZE_MODE_FIT},
+     * {@link AspectRatioFrameLayout#RESIZE_MODE_FIXED_HEIGHT} or
+     * {@link AspectRatioFrameLayout#RESIZE_MODE_FIXED_WIDTH}.
+     *
+     * @param resizeMode The resize mode.
+     */
+    public void setResizeMode(int resizeMode) {
+        layout.setResizeMode(resizeMode);
+    }
+
+    /**
+     * Get the view onto which video is rendered. This is either a {@link SurfaceView} (default)
+     * or a {@link TextureView} if the {@code use_texture_view} view attribute has been set to true.
+     *
+     * @return either a {@link SurfaceView} or a {@link TextureView}.
+     */
+    public View getVideoSurfaceView() {
+        return surfaceView;
+    }
+
+    private final class ComponentListener implements SimpleExoPlayer.VideoListener,
+            TextRenderer.Output, ExoPlayer.EventListener {
+
+        // TextRenderer.Output implementation
+
+        @Override
+        public void onCues(List<Cue> cues) {
+            subtitleLayout.onCues(cues);
+        }
+
+        // SimpleExoPlayer.VideoListener implementation
+
+        @Override
+        public void onVideoSizeChanged(int width, int height, int unappliedRotationDegrees,
+                                       float pixelWidthHeightRatio) {
+            layout.setAspectRatio(height == 0 ? 1 : (width * pixelWidthHeightRatio) / height);
+        }
+
+        @Override
+        public void onRenderedFirstFrame() {
+            shutterView.setVisibility(GONE);
+        }
+
+        @Override
+        public void onVideoTracksDisabled() {
+            shutterView.setVisibility(VISIBLE);
+        }
+
+        // ExoPlayer.EventListener implementation
+
+        @Override
+        public void onLoadingChanged(boolean isLoading) {
+            // Do nothing.
+        }
+
+        @Override
+        public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
+            // Do nothing.
+        }
+
+        @Override
+        public void onPlayerError(ExoPlaybackException e) {
+            // Do nothing.
+        }
+
+        @Override
+        public void onPositionDiscontinuity() {
+            // Do nothing.
+        }
+
+        @Override
+        public void onTimelineChanged(Timeline timeline, Object manifest) {
+            // Do nothing.
+        }
+
+    }
+
+}
+

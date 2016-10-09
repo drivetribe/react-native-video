@@ -3,8 +3,8 @@ package com.brentvatne.exoplayer;
 import com.brentvatne.react.VideoViewEvents;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.common.MapBuilder;
-import com.facebook.react.uimanager.SimpleViewManager;
 import com.facebook.react.uimanager.ThemedReactContext;
+import com.facebook.react.uimanager.ViewGroupManager;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.yqritc.scalablevideoview.ScalableType;
 
@@ -12,7 +12,7 @@ import java.util.Map;
 
 import javax.annotation.Nullable;
 
-public class ReactExoplayerViewManager extends SimpleViewManager<ReactExoplayerView> {
+public class ReactExoplayerViewManager extends ViewGroupManager<ReactExoplayerView> {
 
     private static final String REACT_CLASS = "RCTVideo";
 
