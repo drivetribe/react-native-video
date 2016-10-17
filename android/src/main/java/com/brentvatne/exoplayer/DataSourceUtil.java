@@ -45,7 +45,8 @@ class DataSourceUtil {
     }
 
     static HttpDataSource.Factory buildHttpDataSourceFactory(Context context, DefaultBandwidthMeter bandwidthMeter) {
-        return new DefaultHttpDataSourceFactory(getUserAgent(context), bandwidthMeter);
+        // DefaultHttpDataSourceFactory(String userAgent, TransferListener<? super DataSource> listener, int connectTimeoutMillis, int readTimeoutMillis, boolean allowCrossProtocolRedirects) 
+        return new DefaultHttpDataSourceFactory(getUserAgent(context), bandwidthMeter, 20*1000, 20*1000, true);
     }
 
 }
