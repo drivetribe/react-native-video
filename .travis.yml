@@ -71,7 +71,7 @@ install:
 script:
 - if [[ $TEST_TYPE == 'js' ]]; then npm run check; fi
 - if [[ $TEST_TYPE == 'js' ]]; then cd example && npm run check && cd ..; fi
-- if [[ $TEST_TYPE == 'android' ]]; then ./example/android/gradlew build -p example/android; fi
+- if [[ $TEST_TYPE == 'android' ]]; then ./example/android/gradlew build -p example/android -PdisablePreDex --stacktrace; fi
 
 branches:
   only:
