@@ -11,7 +11,7 @@ Requires react-native >= 0.38.0
 
 ### Add it to your project
 
-Run `npm i -S react-native-video`
+Run `npm i --save @drivetribe/react-native-video`
 
 #### iOS
 
@@ -42,7 +42,7 @@ Or if you have trouble, make the following additions to the given files manually
 
 ```
 include ':react-native-video'
-project(':react-native-video').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-video/android-exoplayer')
+project(':react-native-video').projectDir = new File(rootProject.projectDir, '../node_modules/@drivetribe/react-native-video/android-exoplayer')
 ```
 
 **android/app/build.gradle**
@@ -150,7 +150,7 @@ const styles = Stylesheet.create({
 
 ### Play in background on iOS
 
-To enable audio to play in background on iOS the audio session needs to be set to `AVAudioSessionCategoryPlayback`. See [Apple documentation][3] for additional details. (NOTE: there is now a ticket to [expose this as a prop]( https://github.com/react-native-community/react-native-video/issues/310) )
+To enable audio to play in background on iOS the audio session needs to be set to `AVAudioSessionCategoryPlayback`. See [Apple documentation][1] for additional details. (NOTE: there is now a ticket to [expose this as a prop]( https://github.com/react-native-community/react-native-video/issues/310) )
 
 ## Static Methods
 
@@ -164,7 +164,7 @@ Toggles a fullscreen player. Access using a ref to the component.
 
 ## Examples
 
-- Try the included [VideoPlayer example][2] yourself:
+- Try the included VideoPlayer example yourself:
 
    ```sh
    git clone git@github.com:drivetribe/react-native-video.git
@@ -177,17 +177,12 @@ Toggles a fullscreen player. Access using a ref to the component.
 
    Then `Cmd+R` to start the React Packager, build and run the project in the simulator.
 
-- [Lumpen Radio](https://github.com/jhabdas/lumpen-radio) contains another example integration using local files and full screen background video.
-
 ## TODOS
-
+- [ ] Callback to get buffering progress for remote videos
 - [ ] Add support for captions
 - [ ] Add support for playing multiple videos in a sequence (will interfere with current `repeat` implementation)
-- [ ] Callback to get buffering progress for remote videos
 
-[1]: https://github.com/brentvatne/react-native-login/blob/56c47a5d1e23781e86e19b27e10427fd6391f666/App/Screens/UserInfoScreen.js#L32-L35
-[2]: https://github.com/react-native-community/react-native-video/tree/master/example
-[3]: https://developer.apple.com/library/ios/qa/qa1668/_index.html
+[1]: https://developer.apple.com/library/ios/qa/qa1668/_index.html
 
 ---
 
