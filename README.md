@@ -164,14 +164,14 @@ Toggles a fullscreen player. Access using a ref to the component.
 
 ## Examples
 
-- See an [Example integration][1] in `react-native-login` *note that this example uses an older version of this library, before we used `export default` -- if you use `require` you will need to do `require('react-native-video').default` as per instructions above.*
 - Try the included [VideoPlayer example][2] yourself:
 
    ```sh
-   git clone git@github.com:brentvatne/react-native-video.git
+   git clone git@github.com:drivetribe/react-native-video.git
    cd react-native-video/Examples/VideoPlayer
    npm install
-   open VideoPlayer.xcodeproj
+   react-native run-android
+   react-native run-ios
 
    ```
 
