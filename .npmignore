@@ -1,2 +1,5 @@
 /example
-/android
+/scripts
+.travis.yml
+.eslintrc
+.flowconfig
