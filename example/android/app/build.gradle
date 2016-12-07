@@ -17,10 +17,6 @@ android {
         }
     }
 
-    lintOptions {
-        textReport true
-    }
-
     buildTypes {
         release {
             signingConfig signingConfigs.debug

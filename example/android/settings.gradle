@@ -3,5 +3,5 @@ rootProject.name = 'VideoPlayer'
 include ':app',
         ':react-native-video'
 
-//project(':react-native-video').projectDir = new File(rootProject.projectDir, '../../android')
-project(':react-native-video').projectDir = new File(rootProject.projectDir, '../node_modules/@drivetribe/react-native-video/android')
+project(':react-native-video').projectDir = new File(rootProject.projectDir, '../../android')
+//project(':react-native-video').projectDir = new File(rootProject.projectDir, '../node_modules/@drivetribe/react-native-video/android')
