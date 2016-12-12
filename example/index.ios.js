@@ -30,6 +30,7 @@ class VideoPlayer extends Component {
     controls: false,
     paused: true,
     skin: 'custom',
+    isBuffering: false
   };
 
   onLoad(data) {
@@ -40,8 +41,8 @@ class VideoPlayer extends Component {
     this.setState({ currentTime: data.currentTime });
   }
 
-  onBuffer(data) {
-    console.log('data', data);
+  onBuffer({ isBuffering }: { isBuffering: boolean }) {
+    this.setState({ isBuffering })
   }
 
   getCurrentTimePercentage() {
