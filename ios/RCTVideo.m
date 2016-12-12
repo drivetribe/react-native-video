@@ -379,9 +379,9 @@ static NSString *const playbackRate = @"rate";
       }
       _playerBufferEmpty = NO;
     } else if ([keyPath isEqualToString:playbackBufferFull]) {
-      self.onVideoBuffer(@{@"isBuffering": @(NO), @"target": self.reactTag})
+      self.onVideoBuffer(@{@"isBuffering": @(NO), @"target": self.reactTag});
     } else if ([keyPath isEqualToString:playbackBufferEmpty]) {
-      self.onVideoBuffer(@{@"isBuffering": @(YES), @"target": self.reactTag})
+      self.onVideoBuffer(@{@"isBuffering": @(YES), @"target": self.reactTag});
     }
    } else if (object == _playerLayer) {
       if([keyPath isEqualToString:readyForDisplayKeyPath] && [change objectForKey:NSKeyValueChangeNewKey]) {
