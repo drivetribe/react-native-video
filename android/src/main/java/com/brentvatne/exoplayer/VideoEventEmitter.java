@@ -86,6 +86,7 @@ class VideoEventEmitter {
     private static final String EVENT_PROP_HEIGHT = "height";
     private static final String EVENT_PROP_ORIENTATION = "orientation";
     private static final String EVENT_PROP_HAS_AUDIO_FOCUS = "hasAudioFocus";
+    private static final String EVENT_PROP_IS_BUFFERING = "isBuffering";
 
     private static final String EVENT_PROP_ERROR = "error";
     private static final String EVENT_PROP_ERROR_STRING = "errorString";
@@ -144,8 +145,10 @@ class VideoEventEmitter {
         receiveEvent(EVENT_READY, null);
     }
 
-    void buffering() {
-        receiveEvent(EVENT_BUFFER, null);
+    void buffering(boolean isBuffering) {
+        WritableMap map = Arguments.createMap();
+        map.putBoolean(EVENT_PROP_IS_BUFFERING, isBuffering);
+        receiveEvent(EVENT_BUFFER, map);
     }
 
     void idle() {

@@ -99,9 +99,7 @@ public class ReactExoplayerViewManager extends ViewGroupManager<ReactExoplayerVi
 
     @ReactProp(name = PROP_RESIZE_MODE)
     public void setResizeMode(final ReactExoplayerView videoView, final String resizeModeOrdinalString) {
-        int resizeMode = convertToIntDef(resizeModeOrdinalString);
-        Log.d("ajaj", "setResize: " + resizeModeOrdinalString + " mode: " + resizeMode);
-        videoView.setResizeModeModifier(resizeMode);
+        videoView.setResizeModeModifier(convertToIntDef(resizeModeOrdinalString));
     }
 
     @ReactProp(name = PROP_REPEAT, defaultBoolean = false)

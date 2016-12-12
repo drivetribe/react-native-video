@@ -83,6 +83,7 @@ class ReactExoplayerView extends FrameLayout implements
     private long playerPosition;
     private boolean loadVideoStarted;
     private boolean isPaused = true;
+    private boolean isBuffering;
     private boolean isTimelineStatic;
 
     // Props from React
@@ -94,7 +95,7 @@ class ReactExoplayerView extends FrameLayout implements
     // React
     private final ThemedReactContext themedReactContext;
     private final AudioManager audioManager;
-    private final AudioBecomingNoisyReceiver audioBecomingNoisyReciever;
+    private final AudioBecomingNoisyReceiver audioBecomingNoisyReceiver;
 
     private final Handler progressHandler = new Handler() {
         @Override
@@ -122,7 +123,7 @@ class ReactExoplayerView extends FrameLayout implements
         this.themedReactContext = context;
         audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
         themedReactContext.addLifecycleEventListener(this);
-        audioBecomingNoisyReciever = new AudioBecomingNoisyReceiver(themedReactContext);
+        audioBecomingNoisyReceiver = new AudioBecomingNoisyReceiver(themedReactContext);
     }
 
 
@@ -201,7 +202,7 @@ class ReactExoplayerView extends FrameLayout implements
                     player.seekTo(playerWindow, playerPosition);
                 }
             }
-            audioBecomingNoisyReciever.setListener(this);
+            audioBecomingNoisyReceiver.setListener(this);
             setPlayWhenReady(!isPaused);
             playerNeedsSource = true;
         }
@@ -253,7 +254,7 @@ class ReactExoplayerView extends FrameLayout implements
         }
         progressHandler.removeMessages(SHOW_PROGRESS);
         themedReactContext.removeLifecycleEventListener(this);
-        audioBecomingNoisyReciever.removeListener();
+        audioBecomingNoisyReceiver.removeListener();
     }
 
     private boolean requestAudioFocus() {
@@ -381,11 +382,12 @@ class ReactExoplayerView extends FrameLayout implements
                 break;
             case ExoPlayer.STATE_BUFFERING:
                 text += "buffering";
-                eventEmitter.buffering();
+                onBuffering(true);
                 break;
             case ExoPlayer.STATE_READY:
                 text += "ready";
                 eventEmitter.ready();
+                onBuffering(false);
                 startProgressHandler();
                 videoLoaded();
                 break;
@@ -412,6 +414,19 @@ class ReactExoplayerView extends FrameLayout implements
             int width = videoFormat != null ? videoFormat.width : 0;
             int height = videoFormat != null ? videoFormat.height : 0;
             eventEmitter.load(player.getDuration(), player.getCurrentPosition(), width, height);
+        }
+    }
+
+    private void onBuffering(boolean buffering) {
+        if (isBuffering == buffering) {
+            return;
+        }
+
+        isBuffering = buffering;
+        if (buffering) {
+            eventEmitter.buffering(true);
+        } else {
+            eventEmitter.buffering(false);
         }
     }
 
