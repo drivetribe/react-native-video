@@ -30,7 +30,7 @@ class VideoPlayer extends Component {
     controls: false,
     paused: true,
     skin: 'custom',
-    isBuffering: false
+    isBuffering: false,
   };
 
   onLoad(data) {
@@ -42,7 +42,7 @@ class VideoPlayer extends Component {
   }
 
   onBuffer({ isBuffering }: { isBuffering: boolean }) {
-    this.setState({ isBuffering })
+    this.setState({ isBuffering });
   }
 
   getCurrentTimePercentage() {
