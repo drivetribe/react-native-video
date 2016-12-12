@@ -8,6 +8,8 @@ static NSString *const statusKeyPath = @"status";
 static NSString *const playbackLikelyToKeepUpKeyPath = @"playbackLikelyToKeepUp";
 static NSString *const playbackBufferEmptyKeyPath = @"playbackBufferEmpty";
 static NSString *const readyForDisplayKeyPath = @"readyForDisplay";
+static NSString *const playbackBufferFull = @"playbackBufferFull";
+static NSString *const playbackBufferEmpty = @"playbackBufferEmpty";
 static NSString *const playbackRate = @"rate";
 
 @implementation RCTVideo
@@ -226,6 +228,8 @@ static NSString *const playbackRate = @"rate";
   [_playerItem addObserver:self forKeyPath:statusKeyPath options:0 context:nil];
   [_playerItem addObserver:self forKeyPath:playbackBufferEmptyKeyPath options:0 context:nil];
   [_playerItem addObserver:self forKeyPath:playbackLikelyToKeepUpKeyPath options:0 context:nil];
+  [_playerItem addObserver:self forKeyPath:playbackBufferFull options:0 context:nil];
+  [_playerItem addObserver:self forKeyPath:playbackBufferEmpty options:0 context:nil];
   _playerItemObserversSet = YES;
 }
 
@@ -238,6 +242,8 @@ static NSString *const playbackRate = @"rate";
     [_playerItem removeObserver:self forKeyPath:statusKeyPath];
     [_playerItem removeObserver:self forKeyPath:playbackBufferEmptyKeyPath];
     [_playerItem removeObserver:self forKeyPath:playbackLikelyToKeepUpKeyPath];
+    [_playerItem removeObserver:self forKeyPath:playbackBufferFull];
+    [_playerItem removeObserver:self forKeyPath:playbackBufferEmpty];
     _playerItemObserversSet = NO;
   }
 }
@@ -372,6 +378,10 @@ static NSString *const playbackRate = @"rate";
         [self setPaused:_paused];
       }
       _playerBufferEmpty = NO;
+    } else if ([keyPath isEqualToString:playbackBufferFull]) {
+      self.onVideoBuffer(@{@"isBuffering": @(NO), @"target": self.reactTag})
+    } else if ([keyPath isEqualToString:playbackBufferEmpty]) {
+      self.onVideoBuffer(@{@"isBuffering": @(YES), @"target": self.reactTag})
     }
    } else if (object == _playerLayer) {
       if([keyPath isEqualToString:readyForDisplayKeyPath] && [change objectForKey:NSKeyValueChangeNewKey]) {
