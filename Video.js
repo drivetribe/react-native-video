@@ -243,6 +243,7 @@ Video.propTypes = {
   progressUpdateInterval: PropTypes.number,
   onLoadStart: PropTypes.func,
   onLoad: PropTypes.func,
+  onBuffer: PropTypes.func,
   onError: PropTypes.func,
   onProgress: PropTypes.func,
   onSeek: PropTypes.func,
