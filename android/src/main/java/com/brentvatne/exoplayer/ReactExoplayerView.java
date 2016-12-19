@@ -90,6 +90,7 @@ class ReactExoplayerView extends FrameLayout implements
     private Uri srcUri;
     private String extension;
     private boolean repeat;
+    private boolean disableFocus;
     // \ End props
 
     // React
@@ -258,6 +259,9 @@ class ReactExoplayerView extends FrameLayout implements
     }
 
     private boolean requestAudioFocus() {
+        if (disableFocus) {
+            return true;
+        }
         int result = audioManager.requestAudioFocus(this,
                 AudioManager.STREAM_MUSIC,
                 AudioManager.AUDIOFOCUS_GAIN);
@@ -299,7 +303,9 @@ class ReactExoplayerView extends FrameLayout implements
         } else {
             initializePlayer();
         }
-        setKeepScreenOn(true);
+        if (!disableFocus) {
+            setKeepScreenOn(true);
+        }
     }
 
     private void pausePlayback() {
@@ -553,4 +559,7 @@ class ReactExoplayerView extends FrameLayout implements
         // TODO: implement
     }
 
+    public void setDisableFocus(boolean disableFocus) {
+        this.disableFocus = disableFocus;
+    }
 }

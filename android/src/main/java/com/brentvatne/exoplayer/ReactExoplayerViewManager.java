@@ -3,7 +3,6 @@ package com.brentvatne.exoplayer;
 import android.content.Context;
 import android.net.Uri;
 import android.text.TextUtils;
-import android.util.Log;
 
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.common.MapBuilder;
@@ -31,6 +30,7 @@ public class ReactExoplayerViewManager extends ViewGroupManager<ReactExoplayerVi
     private static final String PROP_SEEK = "seek";
     private static final String PROP_RATE = "rate";
     private static final String PROP_PLAY_IN_BACKGROUND = "playInBackground";
+    private static final String PROP_DISABLE_FOCUS = "disableFocus";
 
     @Override
     public String getName() {
@@ -135,6 +135,11 @@ public class ReactExoplayerViewManager extends ViewGroupManager<ReactExoplayerVi
     @ReactProp(name = PROP_PLAY_IN_BACKGROUND, defaultBoolean = false)
     public void setPlayInBackground(final ReactExoplayerView videoView, final boolean playInBackground) {
         videoView.setPlayInBackground(playInBackground);
+    }
+
+    @ReactProp(name = PROP_DISABLE_FOCUS, defaultBoolean = false)
+    public void setDisableFocus(final ReactExoplayerView videoView, final boolean disableFocus) {
+        videoView.setDisableFocus(disableFocus);
     }
 
     private boolean startsWithValidScheme(String uriString) {
