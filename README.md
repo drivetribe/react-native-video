@@ -131,6 +131,7 @@ const styles = StyleSheet.create({
    onEnd={this.onEnd}           // Callback when playback finishes
    onError={this.videoError}    // Callback when video cannot be loaded
    onAudio={this.videoError}    // Callback when video cannot be loaded
+   disableFocus={true}          // disables audio focus and wake lock (default false)
    onAudioBecomingNoisy={this.onAudioBecomingNoisy} // Callback when audio is becoming noisy - should pause video
    onAudioFocusChanged={this.onAudioFocusChanged} // Callback when audio focus has been lost - another app stole focus pause if lost
    style={styles.backgroundVideo}
