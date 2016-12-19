@@ -11,12 +11,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
+import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.Timeline;
+import com.google.android.exoplayer2.source.TrackGroupArray;
 import com.google.android.exoplayer2.text.Cue;
 import com.google.android.exoplayer2.text.TextRenderer;
+import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
 import com.google.android.exoplayer2.ui.SubtitleView;
 
 import java.util.List;
@@ -95,6 +98,7 @@ public final class ExoPlayerView extends FrameLayout {
             this.player.setVideoSurface(null);
         }
         this.player = player;
+        shutterView.setVisibility(VISIBLE);
         if (player != null) {
             if (surfaceView instanceof TextureView) {
                 player.setVideoTextureView((TextureView) surfaceView);
@@ -104,8 +108,6 @@ public final class ExoPlayerView extends FrameLayout {
             player.setVideoListener(componentListener);
             player.addListener(componentListener);
             player.setTextOutput(componentListener);
-        } else {
-            shutterView.setVisibility(VISIBLE);
         }
     }
 
@@ -142,6 +144,22 @@ public final class ExoPlayerView extends FrameLayout {
         }
     };
 
+    private void updateForCurrentTrackSelections() {
+        if (player == null) {
+            return;
+        }
+        TrackSelectionArray selections = player.getCurrentTrackSelections();
+        for (int i = 0; i < selections.length; i++) {
+            if (player.getRendererType(i) == C.TRACK_TYPE_VIDEO && selections.get(i) != null) {
+                // Video enabled so artwork must be hidden. If the shutter is closed, it will be opened in
+                // onRenderedFirstFrame().
+                return;
+            }
+        }
+        // Video disabled so the shutter must be closed.
+        shutterView.setVisibility(VISIBLE);
+    }
+
     private final class ComponentListener implements SimpleExoPlayer.VideoListener,
             TextRenderer.Output, ExoPlayer.EventListener {
 
@@ -167,12 +185,7 @@ public final class ExoPlayerView extends FrameLayout {
 
         @Override
         public void onRenderedFirstFrame() {
-            shutterView.setVisibility(GONE);
-        }
-
-        @Override
-        public void onVideoTracksDisabled() {
-            shutterView.setVisibility(VISIBLE);
+            shutterView.setVisibility(INVISIBLE);
         }
 
         // ExoPlayer.EventListener implementation
@@ -200,6 +213,11 @@ public final class ExoPlayerView extends FrameLayout {
         @Override
         public void onTimelineChanged(Timeline timeline, Object manifest) {
             // Do nothing.
+        }
+
+        @Override
+        public void onTracksChanged(TrackGroupArray trackGroups, TrackSelectionArray trackSelections) {
+            updateForCurrentTrackSelections();
         }
 
     }
