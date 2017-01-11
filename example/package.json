@@ -6,8 +6,8 @@
     "start": "node_modules/react-native/packager/packager.sh"
   },
   "dependencies": {
-    "react": "15.4.1",
-    "react-native": "~0.38.0",
+    "react": "15.4.2",
+    "react-native": "~0.40.0",
     "@drivetribe/react-native-video": "file:../"
   },
   "devDependencies": {
@@ -17,7 +17,7 @@
     "eslint-plugin-jsx-a11y": "^2.2.3",
     "eslint-plugin-react": "6.8.0",
     "eslint": "3.11.1",
-    "flow-bin": "~0.33.0"
+    "flow-bin": "~0.36.0"
   },
   "scripts": {
     "lint": "eslint *.js",
