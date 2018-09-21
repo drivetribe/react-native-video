@@ -40,3 +40,5 @@ android/keystores/debug.keystore
 
 
 /example
+.eslintrc.json
+yarn.lock
