@@ -8,12 +8,12 @@ import {
   StyleSheet,
   requireNativeComponent,
   NativeModules,
-  View,
-  Image,
   ViewPropTypes,
 } from 'react-native';
 import resolveAssetSource from 'react-native/Libraries/Image/resolveAssetSource';
 import VideoResizeMode from './VideoResizeMode.js';
+
+const RCTVideo = requireNativeComponent('RCTVideo');
 
 const styles = StyleSheet.create({
   base: {
@@ -21,20 +21,16 @@ const styles = StyleSheet.create({
   },
 });
 
-export default class Video extends Component {
-  constructor(props) {
-    super(props);
+export default class Video extends Component<*> {
+  _root: *;
 
-    this.state = {
-      showPoster: true,
-    };
+  setNativeProps(nativeProps: *) {
+    if (this._root) {
+      this._root.setNativeProps(nativeProps);
+    }
   }
 
-  setNativeProps(nativeProps) {
-    this._root.setNativeProps(nativeProps);
-  }
-
-  seek = time => {
+  seek = (time: number) => {
     this.setNativeProps({ seek: time });
   };
 
@@ -75,10 +71,6 @@ export default class Video extends Component {
   };
 
   _onSeek = event => {
-    if (this.state.showPoster) {
-      this.setState({ showPoster: false });
-    }
-
     if (this.props.onSeek) {
       this.props.onSeek(event.nativeEvent);
     }
@@ -139,10 +131,6 @@ export default class Video extends Component {
   };
 
   _onPlaybackRateChange = event => {
-    if (this.state.showPoster && event.nativeEvent.playbackRate !== 0) {
-      this.setState({ showPoster: false });
-    }
-
     if (this.props.onPlaybackRateChange) {
       this.props.onPlaybackRateChange(event.nativeEvent);
     }
@@ -225,24 +213,6 @@ export default class Video extends Component {
       onAudioBecomingNoisy: this._onAudioBecomingNoisy,
     });
 
-    if (this.props.poster && this.state.showPoster) {
-      const posterStyle = {
-        position: 'absolute',
-        left: 0,
-        top: 0,
-        right: 0,
-        bottom: 0,
-        resizeMode: 'contain',
-      };
-
-      return (
-        <View style={nativeProps.style}>
-          <RCTVideo ref={this._assignRoot} {...nativeProps} />
-          <Image style={posterStyle} source={{ uri: this.props.poster }} />
-        </View>
-      );
-    }
-
     return <RCTVideo ref={this._assignRoot} {...nativeProps} />;
   }
 }
@@ -312,11 +282,3 @@ Video.propTypes = {
   rotation: PropTypes.number,
   ...ViewPropTypes,
 };
-
-const RCTVideo = requireNativeComponent('RCTVideo', Video, {
-  nativeOnly: {
-    src: true,
-    seek: true,
-    fullscreen: true,
-  },
-});
