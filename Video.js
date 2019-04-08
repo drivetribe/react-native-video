@@ -154,9 +154,8 @@ export default class Video extends Component<*> {
     }
   };
 
-  getViewManagerConfig = viewManagerName => {
-    return NativeModules.UIManager.getViewManagerConfig(viewManagerName);
-  };
+  getViewManagerConfig = (viewManagerName: string): * =>
+    NativeModules.UIManager.getViewManagerConfig(viewManagerName);
 
   render(): React$Element<any> {
     const resizeMode = this.props.resizeMode;
