@@ -6,12 +6,12 @@
     "start": "react-native start"
   },
   "dependencies": {
-    "react": "16.8.6",
-    "react-native": "0.59.3",
+    "react": "16.8.3",
+    "react-native": "0.59.8",
     "@drivetribe/react-native-video": "file:../"
   },
   "devDependencies": {
-    "@babel/core": "7.4.3",
-    "metro-react-native-babel-preset": "0.53.1"
+    "@babel/core": "7.4.5",
+    "metro-react-native-babel-preset": "0.54.1"
   }
 }
