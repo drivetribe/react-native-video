@@ -63,6 +63,11 @@ apply plugin: "com.android.application"
  * ]
  */
 
+project.ext.react = [
+        entryFile: "index.js",
+        enableHermes: true,
+]
+
 apply from: "../../node_modules/react-native/react.gradle"
 
 /**
@@ -87,6 +92,15 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
 
+    packagingOptions {
+        pickFirst '**/armeabi-v7a/libc++_shared.so'
+        pickFirst '**/x86/libc++_shared.so'
+        pickFirst '**/arm64-v8a/libc++_shared.so'
+        pickFirst '**/x86_64/libc++_shared.so'
+        pickFirst '**/x86/libjsc.so'
+        pickFirst '**/armeabi-v7a/libjsc.so'
+    }
+
     buildTypes {
         release {
             signingConfig signingConfigs.debug
@@ -97,7 +111,12 @@ android {
 }
 
 dependencies {
-    implementation "com.android.support:appcompat-v7:28.0.0"
+    implementation 'androidx.appcompat:appcompat:1.0.2'
     implementation "com.facebook.react:react-native:$reactNativeVersion"  // From node_modules
+
+    def hermesPath = "../../node_modules/hermesvm/android/";
+    debugImplementation files(hermesPath + "hermes-debug.aar")
+    releaseImplementation files(hermesPath + "hermes-release.aar")
+
     implementation project(':react-native-video')
 }

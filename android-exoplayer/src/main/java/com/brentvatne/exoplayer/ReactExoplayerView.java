@@ -40,7 +40,6 @@ import com.google.android.exoplayer2.trackselection.MappingTrackSelector;
 import com.google.android.exoplayer2.trackselection.TrackSelection;
 import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
 import com.google.android.exoplayer2.upstream.DataSource;
-import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
 import com.google.android.exoplayer2.util.Util;
 
 import java.net.CookieHandler;
@@ -56,7 +55,6 @@ import java.net.CookiePolicy;
 
     private static final String TAG = "ReactExoplayerView";
 
-    private static final DefaultBandwidthMeter BANDWIDTH_METER = new DefaultBandwidthMeter();
     private static final CookieManager DEFAULT_COOKIE_MANAGER;
     private static final int SHOW_PROGRESS = 1;
 
@@ -133,7 +131,7 @@ import java.net.CookiePolicy;
 
     private void createViews() {
         clearResumePosition();
-        mediaDataSourceFactory = buildDataSourceFactory(true);
+        mediaDataSourceFactory = buildDataSourceFactory();
         if (CookieHandler.getDefault() != DEFAULT_COOKIE_MANAGER) {
             CookieHandler.setDefault(DEFAULT_COOKIE_MANAGER);
         }
@@ -186,10 +184,11 @@ import java.net.CookiePolicy;
     private void initializePlayer() {
         boolean needNewPlayer = player == null;
         if (needNewPlayer) {
-            TrackSelection.Factory adaptiveTrackSelectionFactory = new AdaptiveTrackSelection.Factory(BANDWIDTH_METER);
+            TrackSelection.Factory adaptiveTrackSelectionFactory = new AdaptiveTrackSelection.Factory();
             trackSelector = new DefaultTrackSelector(adaptiveTrackSelectionFactory);
-            DefaultRenderersFactory renderersFactory = new DefaultRenderersFactory(getContext());
-            player = ExoPlayerFactory.newSimpleInstance(renderersFactory, trackSelector);
+            Context context = getContext();
+            DefaultRenderersFactory renderersFactory = new DefaultRenderersFactory(context);
+            player = ExoPlayerFactory.newSimpleInstance(context, renderersFactory, trackSelector);
             player.addListener(this);
             player.addMetadataOutput(this);
             exoPlayerView.setPlayer(player);
@@ -324,13 +323,9 @@ import java.net.CookiePolicy;
 
     /**
      * Returns a new DataSource factory.
-     *
-     * @param useBandwidthMeter Whether to set {@link #BANDWIDTH_METER} as a listener to the new
-     *                          DataSource factory.
-     * @return A new DataSource factory.
      */
-    private DataSource.Factory buildDataSourceFactory(boolean useBandwidthMeter) {
-        return DataSourceUtil.getDefaultDataSourceFactory(getContext(), useBandwidthMeter ? BANDWIDTH_METER : null);
+    private DataSource.Factory buildDataSourceFactory() {
+        return DataSourceUtil.getDefaultDataSourceFactory(getContext());
     }
 
     // AudioManager.OnAudioFocusChangeListener implementation
@@ -533,7 +528,7 @@ import java.net.CookiePolicy;
 
             this.srcUri = uri;
             this.extension = extension;
-            this.mediaDataSourceFactory = DataSourceUtil.getDefaultDataSourceFactory(getContext(), BANDWIDTH_METER);
+            this.mediaDataSourceFactory = DataSourceUtil.getDefaultDataSourceFactory(getContext());
 
             if (!isOriginalSourceNull && !isSourceEqual) {
                 reloadSource();

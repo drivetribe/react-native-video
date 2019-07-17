@@ -1,7 +1,7 @@
 apply plugin: 'com.android.library'
 
 ext {
-    exoPlayerVersion = '2.9.6'
+    exoPlayerVersion = '2.10.3'
 }
 
 android {
@@ -22,7 +22,7 @@ android {
 dependencies {
     //noinspection GradleDynamicVersion
     api 'com.facebook.react:react-native:+'
-    api 'com.squareup.okhttp3:okhttp:3.14.1'
+    api 'com.squareup.okhttp3:okhttp:3.14.2'
 
     implementation "com.google.android.exoplayer:exoplayer-core:$exoPlayerVersion"
     implementation "com.google.android.exoplayer:exoplayer-hls:$exoPlayerVersion"
